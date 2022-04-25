@@ -18,8 +18,8 @@ module gearPoc(toothThickness, numberOfTeeth, toothHeight, thickness, tolerance=
 module gearPocWithSpring(toothThickness, numberOfTeeth, toothHeight, thickness, tolerance=0) {
     
     step = 0.2;
-    circles = 4.5;
-    arm_len = 2.8;
+    circles = 4;
+    arm_len = 3.1;
 
     b = arm_len / 2 / PI;
     points = [for(theta = [0:step:2 * PI * circles])
@@ -29,12 +29,10 @@ module gearPocWithSpring(toothThickness, numberOfTeeth, toothHeight, thickness, 
     union() {
         difference() {
             gear(toothThickness, numberOfTeeth, toothHeight, thickness, tolerance);
-        translate([0,0,-0.1]) cylinder(thickness+2, r=-2+getRootRadiusFromTeeth(toothThickness, numberOfTeeth, toothHeight));
+        translate([0,0,-0.1]) cylinder(thickness+2, r=-1.5+getRootRadiusFromTeeth(toothThickness, numberOfTeeth, toothHeight));
          }
         linear_extrude(thickness) polyline(points, 0.8);
-        //rotate([0,0,130]) linear_extrude(thickness) polyline(points, 0.8);
-        //rotate([0,0,260]) linear_extrude(thickness) polyline(points, 0.8);
-        rotate([0,0,180]) linear_extrude(thickness) polyline(points, 0.8);
+
         
         translate([0,0,thickness/2]) cylinder(thickness, d=9, $fn=100, center = true);
  }
@@ -108,7 +106,7 @@ module system() {
     translate([0,-0.3,0]) 
     color("#FF4500") {
         difference(){
-            rack(toothThickness, 12, toothHeight, rackHeight, thickness, tolerance);
+            rack(toothThickness, 15, toothHeight, rackHeight, thickness, tolerance);
             translate([4.2,0,-1]) cube([5,5,5]);
         }
         cube([10,4.2,thickness]);
@@ -131,64 +129,52 @@ module system() {
     color("#FF4500") translate([gear5_x,gear5_y,0]) rotate([0,0,gear5_rotation]) gearPocWithSpring(toothThickness,gear5_numberOfTeeth,toothHeight,thickness,tolerance);
     }
 
-translate([0,0,2]) {
+translate([0,0,1.25]) {
     system() ;
 mirror([1,0,0]) system() ;
 }
 
 module support() {
-    translate([gear1_x, gear1_y]) cylinder(thickness+4,d=pin_diameter, $fn=100);
-    translate([gear1_x, gear1_y]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-
-    translate([gear2_x, gear2_y]) cylinder(thickness+4,d=pin_diameter, $fn=100);
-    translate([gear2_x, gear2_y]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-
-    translate([gear3_x, gear3_y]) cylinder(thickness+4,d=pin_diameter, $fn=100);
-    translate([gear3_x, gear3_y]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-
-    translate([gear4_x, gear4_y]) cylinder(thickness+4,d=pin_diameter, $fn=100);
-    translate([gear4_x, gear4_y]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-
-    translate([gear5_x, gear5_y]) rotate([0,0,15]) cylinder(thickness+4,d=pin_diameter+2, $fn=4);
-    translate([gear5_x, gear5_y]) cylinder(1.9,d=4+pin_diameter, $fn=6);
+    translate([gear1_x, gear1_y]) cylinder(thickness+2.5,d=pin_diameter, $fn=100);
+    translate([gear2_x, gear2_y]) cylinder(thickness+2.5,d=pin_diameter, $fn=100);
+    translate([gear3_x, gear3_y]) cylinder(thickness+2.5,d=pin_diameter, $fn=100);
+    translate([gear4_x, gear4_y]) cylinder(thickness+2.5,d=pin_diameter, $fn=100);
+    translate([gear5_x, gear5_y]) rotate([0,0,15]) cylinder(thickness+2.5,d=pin_diameter+1.9, $fn=4);
 
     hull() {
-        cube([gear3_x+pin_diameter,gear3_y+1,1]);
+        translate([0,-0.2,0]) cube([gear3_x+pin_diameter,gear3_y+1.2,1]);
         cube([gear5_x+pin_diameter,gear5_y+pin_diameter,1]);
     }
     
-    translate([0,-0.1,0]) cube([gear3_x+pin_diameter,9.3,1.9]);
     translate([15,-1.1,0]) cube([gear3_x+pin_diameter-15,1,3+1+1]);
-    translate([9.5,5,0]) cube([1,40,3+1+1]);
+    translate([9.5,5,0]) cube([1,42.8,3+1]);
     
-    cube([10,gear5_y+pin_diameter,1.9]);
+    r_main=getFullRadiusFromTeeth(toothThickness, gear5_numberOfTeeth, toothHeight)+0.1;
+    r_4=getFullRadiusFromTeeth(toothThickness, gear4_numberOfTeeth, toothHeight)+0.1;
+    difference() {
+        translate([gear5_x, gear5_y]) cylinder (thickness+1, r=r_main+1, $fn=100);
+        translate([gear5_x, gear5_y,-1]) cylinder (thickness+2.5, r=r_main, $fn=100);
+        translate([gear4_x, gear4_y,-1]) cylinder (thickness+2.5, r=r_4, $fn=100);
+        translate([-0.5, gear5_y-r_main,-1]) cube([10,20,thickness+2.5]);
+        translate([0, gear5_y-r_main/2,-1]) cube([50,50,thickness+2.5]);
+    }
 }
 
 module support_top() {
     difference() {
         union() {
-        translate([0,4.9,0])  hull() {
-            cube([gear3_x+pin_diameter,gear3_y+pin_diameter-4.9,1]);
-            cube([gear5_x+pin_diameter,gear5_y+pin_diameter-4.9,1]);
-        }
-           translate([gear1_x, gear1_y,-1]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-        translate([gear2_x, gear2_y,-1]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-        translate([gear3_x, gear3_y,-1]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-        translate([gear4_x, gear4_y,-1]) cylinder(1.9,d=4+pin_diameter, $fn=6);
-        translate([gear5_x, gear5_y,-1]) cylinder(1.9,d=4+pin_diameter, $fn=6);
+            translate([0,4.9,0])  hull() {
+                cube([gear3_x+pin_diameter,gear3_y+pin_diameter-4.9-4.9,1]);
+                cube([gear5_x+pin_diameter,gear5_y+pin_diameter-4.9,1]);
+            }
 
-    }
-    translate([gear1_x, gear1_y,-3]) cylinder(thickness+4,d=pin_diameter+tolerance*1.5, $fn=100);
-    translate([gear2_x, gear2_y,-3]) cylinder(thickness+4,d=pin_diameter+tolerance*1.5, $fn=100);
-    translate([gear3_x, gear3_y,-3]) cylinder(thickness+4,d=pin_diameter+tolerance*1.5, $fn=100);
-    translate([gear4_x, gear4_y,-3]) cylinder(thickness+4,d=pin_diameter+tolerance*1.5, $fn=100);
-    translate([gear5_x, gear5_y,-3]) rotate([0,0,15]) cylinder(thickness+4,d=pin_diameter+2+tolerance/2, $fn=4);
- 
         }
-    
-   
-    #translate([0,4.9,-1]) cube([gear3_x+pin_diameter,4.3,1.9]);
-    translate([0,4.9,-1]) cube([10,gear5_y+pin_diameter-4.9,1.9]);
+       translate([gear1_x, gear1_y,-1]) cylinder(thickness+2.5,d=pin_diameter+tolerance, $fn=100);
+        translate([gear2_x, gear2_y,-1]) cylinder(thickness+2.5,d=pin_diameter+tolerance, $fn=100);
+        translate([gear3_x, gear3_y,-1]) cylinder(thickness+2.5,d=pin_diameter+tolerance, $fn=100);
+        translate([gear4_x, gear4_y,-1]) cylinder(thickness+2.5,d=pin_diameter+tolerance, $fn=100);
+        translate([gear5_x, gear5_y,-1]) rotate([0,0,15]) cylinder(thickness+2.5,d=pin_diameter+2+tolerance, $fn=4);
+}
 }
 module support_with_hole() {
   difference() {
@@ -197,9 +183,11 @@ module support_with_hole() {
   }
 }
 
+translate([0,0,0]) {
 support_with_hole();
 mirror([1,0,0]) support_with_hole() ;
-!translate([0,0,thickness+3]) {
+}
+%translate([0,0,thickness+1.25]) {
     support_top();
     mirror([1,0,0]) support_top();
 }
