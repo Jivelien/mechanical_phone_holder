@@ -15,6 +15,9 @@ function getRootRadiusFromTeeth(toothThickness, numberOfTeeth, toothHeight) =
 
 function getRackLenght(toothThickness, numberOfTeeth) =
         (numberOfTeeth-1)*toothThickness*2+toothThickness;
+        
+function getFullrackWidth(rackWidth, toothHeight) =
+        rackWidth + getAddendum(toothHeight);
 
 module tooth(toothThickness, toothHeight, thickness, tolerance=0) {
     addendum = getAddendum(toothHeight);
