@@ -51,6 +51,15 @@ gear5_y=gear5_pos[1];
 
 support_border = 1.5;
 
+spacingGear_Border = tolerance *2;
+gear5_fullRadius = getFullRadiusFromTeeth(toothThickness, gear5_numberOfTeeth, toothHeight);
+gear4_fullRadius = getFullRadiusFromTeeth(toothThickness, gear4_numberOfTeeth, toothHeight);
+gear3_fullRadius = getFullRadiusFromTeeth(toothThickness, gear3_numberOfTeeth, toothHeight);
+gear2_fullRadius = getFullRadiusFromTeeth(toothThickness, gear2_numberOfTeeth, toothHeight);
+gear1_fullRadius = getFullRadiusFromTeeth(toothThickness, gear1_numberOfTeeth, toothHeight);
+
+rack_Width = getFullrackWidth(rackHeight,toothHeight);
+
 module gearPoc(numberOfTeeth) {
     color("#FF4500")
         difference() {
@@ -123,8 +132,71 @@ module CentralRack() {
         mirror([1,0,0]) LeftHalfCentralRack();
     }
 }
+module SupportBorder(radius) {
+    difference() {
+        cylinder(thickness, r=radius+spacingGear_Border+support_border, $fn=100);
+        translate([0,0,-1]) cylinder(thickness+2, r=radius+spacingGear_Border, $fn=100);
+   }
+}
+module Contour() {
+    
+        difference() {
+            translate([gear5_x, gear5_y,0]) SupportBorder(gear5_fullRadius);
+            translate([gear4_x, gear4_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear4_fullRadius+spacingGear_Border, $fn=100);
+            translate([0,0,-1]) cube([rack_Width,200,thickness+2]);
+        }
+        difference() {
+            translate([gear4_x, gear4_y,0]) SupportBorder(gear4_fullRadius);
+            translate([gear2_x, gear2_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear2_fullRadius+spacingGear_Border, $fn=100);
+            translate([gear5_x, gear5_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear5_fullRadius+spacingGear_Border, $fn=100);
+        }
+        difference() {
+            translate([gear2_x, gear2_y,0]) SupportBorder(gear2_fullRadius);
+            translate([gear1_x, gear1_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear1_fullRadius+spacingGear_Border, $fn=100);
+            translate([gear4_x, gear4_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear4_fullRadius+spacingGear_Border, $fn=100);
+            translate([gear3_x, gear3_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear3_fullRadius+spacingGear_Border, $fn=100);
+        }
+        difference() {
+            translate([gear3_x, gear3_y,0]) SupportBorder(gear3_fullRadius);
+            translate([gear2_x, gear2_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear2_fullRadius+spacingGear_Border, $fn=100);    translate([0,0,-1]) 
+                cube([getRackLenght(toothThickness, 10.7),rack_Width,thickness+2]);
+        }
 
+        difference() {
+            translate([gear1_x, gear1_y,0]) SupportBorder(gear1_fullRadius);
+            translate([gear2_x, gear2_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear2_fullRadius+spacingGear_Border, $fn=100);
+            translate([0,0,-1]) 
+                cube([getRackLenght(toothThickness, 10.7),rack_Width,thickness+2]);
+        }
+        difference() {
+            translate([0,0,0]) 
+                cube([getRackLenght(toothThickness, 10.7),rack_Width+support_border,thickness]);
+            translate([0,0,-1]) 
+                cube([getRackLenght(toothThickness, 10.7),rack_Width,thickness+2]);
+            translate([gear1_x, gear1_y,0])
+                translate([0,0,-1]) 
+                    cylinder(thickness+2, r=gear1_fullRadius+spacingGear_Border, $fn=100);
+            translate([gear3_x, gear3_y,0])
+                translate([0,0,-1])
+                    cylinder(thickness+2, r=gear3_fullRadius+spacingGear_Border, $fn=100);
+            translate([0,0,-1]) 
+                cube([rack_Width,getRackLenght(toothThickness, 9),thickness+2]);
+            
+        }
 
+        difference() {
+            translate([0,0,0]) 
+                cube([rack_Width+support_border,getRackLenght(toothThickness, 8.6),thickness]);
+            translate([0,0,-1]) 
+                cube([rack_Width,getRackLenght(toothThickness, 8.6),thickness+2]);
+            translate([0,0,-1]) 
+                cube([getRackLenght(toothThickness, 10.7),rack_Width,thickness+2]);
+            translate([gear5_x, gear5_y,0])
+                translate([0,0,-1])
+                    cylinder(thickness+2, r=gear5_fullRadius+spacingGear_Border, $fn=100);
+        }
+   
+}
 /*
 module support_with_hole() {
   difference() {
@@ -136,7 +208,7 @@ module support_with_hole() {
 // System
 translate([0,-0.3,0]) CentralRack();
 
-translate([getRackLenght(toothThickness, 10)+rackHeight,0,0]) rotate([0,0,90]) SideRack();
+translate([getRackLenght(toothThickness, 10.7),0,0]) rotate([0,0,90]) SideRack();
 translate([gear1_x,gear1_y,0]) rotate([0,0,gear1_rotation]) gearPoc(gear1_numberOfTeeth);
 translate([gear2_x,gear2_y,0]) rotate([0,0,gear2_rotation]) gearPoc(gear2_numberOfTeeth);
 translate([gear3_x,gear3_y,0]) rotate([0,0,gear3_rotation]) gearPoc(gear3_numberOfTeeth);
@@ -144,7 +216,7 @@ translate([gear4_x,gear4_y,0]) rotate([0,0,gear4_rotation]) gearPoc(gear4_number
 translate([gear5_x,gear5_y,0]) rotate([0,0,gear5_rotation]) gearPocWithSpring(gear5_numberOfTeeth);
 
 mirror([1,0,0]) {
-    translate([getRackLenght(toothThickness, 10)+rackHeight,0,0]) rotate([0,0,90]) SideRack();
+    translate([getRackLenght(toothThickness, 10.7),0,0]) rotate([0,0,90]) SideRack();
     translate([gear1_x,gear1_y,0]) rotate([0,0,gear1_rotation]) gearPoc(gear1_numberOfTeeth);
     translate([gear2_x,gear2_y,0]) rotate([0,0,gear2_rotation]) gearPoc(gear2_numberOfTeeth);
     translate([gear3_x,gear3_y,0]) rotate([0,0,gear3_rotation]) gearPoc(gear3_numberOfTeeth);
@@ -152,51 +224,5 @@ mirror([1,0,0]) {
     translate([gear5_x,gear5_y,0]) rotate([0,0,gear5_rotation]) gearPocWithSpring(gear5_numberOfTeeth);
 }
 
-spacingGear_Border = tolerance *2;
-gear5_fullRadius = getFullRadiusFromTeeth(toothThickness, gear5_numberOfTeeth, toothHeight);
-gear4_fullRadius = getFullRadiusFromTeeth(toothThickness, gear4_numberOfTeeth, toothHeight);
-gear3_fullRadius = getFullRadiusFromTeeth(toothThickness, gear3_numberOfTeeth, toothHeight);
-gear2_fullRadius = getFullRadiusFromTeeth(toothThickness, gear2_numberOfTeeth, toothHeight);
-gear1_fullRadius = getFullRadiusFromTeeth(toothThickness, gear1_numberOfTeeth, toothHeight);
-
-rack_Width = getFullrackWidth(rackHeight,toothHeight);
-
-module SupportBorder(radius) {
-    difference() {
-        cylinder(thickness, r=radius+spacingGear_Border+support_border, $fn=100);
-        translate([0,0,-1]) cylinder(thickness+2, r=radius+spacingGear_Border, $fn=100);
-   }
-}
-
- difference() {
-    translate([gear5_x, gear5_y,0]) SupportBorder(gear5_fullRadius);
-    translate([gear4_x, gear4_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear4_fullRadius+spacingGear_Border, $fn=100);
-    translate([0,0,-1]) cube([rack_Width,200,thickness+2]);
-}
-
- difference() {
-    translate([gear4_x, gear4_y,0]) SupportBorder(gear4_fullRadius);
-    translate([gear2_x, gear2_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear2_fullRadius+spacingGear_Border, $fn=100);
-    translate([gear5_x, gear5_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear5_fullRadius+spacingGear_Border, $fn=100);
-}
-
-
- difference() {
-    translate([gear2_x, gear2_y,0]) SupportBorder(gear2_fullRadius);
-    translate([gear1_x, gear1_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear1_fullRadius+spacingGear_Border, $fn=100);
-    translate([gear4_x, gear4_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear4_fullRadius+spacingGear_Border, $fn=100);
-    translate([gear3_x, gear3_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear3_fullRadius+spacingGear_Border, $fn=100);
-}
-
- difference() {
-    translate([gear3_x, gear3_y,0]) SupportBorder(gear3_fullRadius);
-    translate([gear2_x, gear2_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear2_fullRadius+spacingGear_Border, $fn=100);
-    translate([0,0,-1]) cube([100,rack_Width,thickness+2]);
-}
-
-
- difference() {
-    translate([gear1_x, gear1_y,0]) SupportBorder(gear1_fullRadius);
-    translate([gear2_x, gear2_y,0])translate([0,0,-1]) cylinder(thickness+2, r=gear2_fullRadius+spacingGear_Border, $fn=100);
-    translate([0,0,-1]) cube([100,rack_Width,thickness+2]);
-}
+Contour();
+mirror([1,0,0]) Contour();
