@@ -1,12 +1,7 @@
-/*
-a = [
-    for (i = [0:0.1:10]) [i,-2-(-(10/(i+1))/7)],
-    for (i = [10:-1:0])  [i,+2]
-];
-    */
+
 $fn=100;
 
-module branch(circle_diameter, lenght, thickness, step = 0.1) {
+module branch(circle_diameter, lenght, thickness, with_holde=false, step = 0.1) {
     middle = lenght/2;
 
     points = [
@@ -19,7 +14,9 @@ module branch(circle_diameter, lenght, thickness, step = 0.1) {
             circle(circle_diameter); 
             translate([lenght,0]) circle(circle_diameter);
         }
-        circle(circle_diameter/2); 
-        translate([lenght,0]) circle(circle_diameter/2);
+        if (with_holde) {
+            circle(circle_diameter/2); 
+            translate([lenght,0]) circle(circle_diameter/2);
+        }
     }
 }
