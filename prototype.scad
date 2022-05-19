@@ -1,7 +1,6 @@
 include <libp_gear.scad>
 include <lib_spiral.scad>
 include <libp_branch.scad>
-include <flat_springV1_3.scad>
 
 toothThickness=5;
 toothHeight=5;
@@ -98,14 +97,20 @@ module SideRack(){
         }
 }
 
+module spring_pin() {
+    cylinder(2,r1=1, r2=2);
+}
+
 module CentralRack() {
     module LeftHalfCentralRack() {
         difference(){
-            
                 rack(toothThickness, centralRack_numberOfTeeth, toothHeight, centralRackHeight, thickness, tolerance);
-            translate([-1,7.5,-1]) cube([7,120,5]);
+            translate ([0,5,1]) cube([centralRackHeight/2,centralRack_numberOfTeeth*5*2-15,thickness +1 ]);
             }
-            cube([10,5,thickness]);
+            translate([0,10,1]) spring_pin();
+            
+            
+            cube([10,5,thickness]); 
             translate([10,0,0]){
                 cube([5,getSolidrackWidth(sideRackHeight,toothHeight),20]);
                 hull() {
@@ -119,8 +124,6 @@ module CentralRack() {
             LeftHalfCentralRack();
             mirror([1,0,0]) LeftHalfCentralRack();
             
-            translate([-4/2,10,1.5]) spring_maker(radius = 3, thickness = 1, depth = 3, width = 4, spring_count = 8, end_len = 0);
-            translate([-4/2,60.5,]) cube([4,1,5.1]);
         }
     }
 }
@@ -263,6 +266,8 @@ module top(circle_diameter,thickness=thickness) {
     a=200;
     translate([-a/2,-tolerance,-0.5]) cube([a,getSolidrackWidth(sideRackHeight,toothHeight)+tolerance*2,thickness+1]);
     }
+    translate([0,61.5,0.1]) mirror([0,0,1]) spring_pin();
+    
 }
 
 
@@ -338,19 +343,15 @@ module system() {
 
 module main_part() {
     system();
-    difference() {
-        translate([0,0,thickness+donut_thickness+tolerance]) {
+    translate([0,0,thickness+donut_thickness+tolerance]) {
         top(branch_diameter, top_thickness);
-    }
-            
-        translate([-4/2-0.05,60.1,]) cube([4.1,1.1,10]);
     }
 
     translate([0,0,-donut_thickness-tolerance-top_thickness]) {
             bottom(branch_diameter, top_thickness);
     }
 }
-translate([0,0,60]) rotate([70,0,0]) main_part();
+translate([0,0,60]) rotate([66,0,0]) main_part();
 
 translate([0,0,60]) rotate([70,0,0]) translate([15.55,10.05,-4]) cube([2.4,14.9,6.5]);
 translate([0,0,60]) rotate([70,0,0]) translate([-15.45-2.5,10.05,-4]) cube([2.4,14.9,6.5]);
