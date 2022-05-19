@@ -17,7 +17,7 @@ gear3_numberOfTeeth = 6;
 gear4_numberOfTeeth = 5;
 gear5_numberOfTeeth = 10;
 
-centralRack_numberOfTeeth = 12;
+centralRack_numberOfTeeth = 14;
 sideRack_numberOfTeeth = 4;
 sideRackHeight=7;
 centralRackHeight=12;
@@ -103,23 +103,24 @@ module CentralRack() {
         difference(){
             
                 rack(toothThickness, centralRack_numberOfTeeth, toothHeight, centralRackHeight, thickness, tolerance);
-            translate([-1,4,-1]) cube([7,104.5,5]);
+            translate([-1,7.5,-1]) cube([7,120,5]);
             }
             cube([10,5,thickness]);
-                translate([10,0,0]){
-                    cube([5,getSolidrackWidth(sideRackHeight,toothHeight),20]);
-                    hull() {
-                        translate([0,0,20-5]) cube([10,getSolidrackWidth(sideRackHeight,toothHeight),5]);
-                        translate([0,4.2,20-5]) cube([5,4.2,5]);
-                    }
-               }
+            translate([10,0,0]){
+                cube([5,getSolidrackWidth(sideRackHeight,toothHeight),20]);
+                hull() {
+                    translate([0,0,20]) cube([10,getSolidrackWidth(sideRackHeight,toothHeight),5]);
+                    translate([0,4.2,20]) cube([5,4.2,5]);
+                }
+           }
     }
     color("#FF4500") {
         union() {
             LeftHalfCentralRack();
             mirror([1,0,0]) LeftHalfCentralRack();
             
-            translate([-4/2,8,1.5]) spring_maker(radius = 2.06, thickness = 1, depth = 3, width = 4, spring_count = 24, end_len = 0);
+            translate([-4/2,10,1.5]) spring_maker(radius = 3, thickness = 1, depth = 3, width = 4, spring_count = 8, end_len = 0);
+            translate([-4/2,60.5,]) cube([4,1,5.1]);
         }
     }
 }
@@ -280,13 +281,17 @@ module bottom(circle_diameter,thickness=thickness) {
         translate([gear4_x,gear4_y]) cylinder(pin_height,d=pin_diameter);
         translate([gear5_x,gear5_y]) cylinder(pin_height,d=pin_diameter);
             
-        branch_set(circle_diameter, thickness);
-        
+        difference() {
+            branch_set(circle_diameter, thickness);
+            translate([15.5,10,-5]) cube([2.5,15,20]);
+        }
         translate([108,2,])
         difference() {
             cylinder(thickness+tolerance*2+3+donut_thickness, r=8);
             translate([-16,-8,0]) cube([16,16,thickness+tolerance*2+3+donut_thickness+1]);
         }
+            translate([14.5,4,0]) cube([1,40,5]);
+            
     }
 union() {
         half(circle_diameter, thickness);
@@ -331,11 +336,22 @@ module system() {
     }
 }
 
-system();
-translate([0,0,thickness+donut_thickness+tolerance]) {
-    top(branch_diameter, top_thickness);
-}
+module main_part() {
+    system();
+    difference() {
+        translate([0,0,thickness+donut_thickness+tolerance]) {
+        top(branch_diameter, top_thickness);
+    }
+            
+        translate([-4/2-0.05,60.1,]) cube([4.1,1.1,10]);
+    }
 
-translate([0,0,-donut_thickness-tolerance-top_thickness]) {
-    bottom(branch_diameter, top_thickness);
+    translate([0,0,-donut_thickness-tolerance-top_thickness]) {
+            bottom(branch_diameter, top_thickness);
+    }
 }
+translate([0,0,60]) rotate([70,0,0]) main_part();
+
+translate([0,0,60]) rotate([70,0,0]) translate([15.55,10.05,-4]) cube([2.4,14.9,6.5]);
+translate([0,0,60]) rotate([70,0,0]) translate([-15.45-2.5,10.05,-4]) cube([2.4,14.9,6.5]);
+translate([0,0,60]) rotate([70,0,0]) translate([-(15.55+15.45+2.5+2.5)/2,10.05,-4.2]) cube([15.55+15.45+2.5+2.5,14.9,2]);
